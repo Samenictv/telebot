@@ -57,16 +57,23 @@ def restrict_message(message):
             # Delete the message from non-admins in restricted topics
             bot.delete_message(message.chat.id, message.message_id)
 
-            # Send a private warning to the user
-            warning_msg = f"⚠️ @{message.from_user.username}\n🚫 Only admins can post in this topic. Please use General topic for discussions."
-            try:
-                bot.send_message(message.from_user.id, warning_msg)
-            except:
-                print("Could not send a private message to the user.")
-
+            # Send warning in the same topic and delete after 1 minute
+            warning_msg = bot.send_message(
+                message.chat.id,
+                f"⚠️ @{message.from_user.id}\n🚫 Only admins can post in this topic. Please use General topic (https://t.me/c/2333606264/1) for discussions.",
+                message_thread_id=message.message_thread_id
+            )
+            
+            # Schedule message deletion after 1 minute
+            def delete_warning():
+                try:
+                    bot.delete_message(message.chat.id, warning_msg.message_id)
+                except Exception as del_error:
+                    print(f"Error deleting warning message: {del_error}")
+            
+            Thread(target=lambda: (time.sleep(60), delete_warning())).start()
         except Exception as e:
-            print(f"Error handling message: {e}")
-
+            print("Error handling message:", e)
 if __name__ == "__main__":
     print("Starting bot...")
     keep_alive()  # Keep the Flask server running
