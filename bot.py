@@ -62,7 +62,7 @@ def restrict_message(message):
         except Exception as e:
             print("Error handling message:", e)
 
-if name == "__main__":
+if __name__ == "__main__":
     print("Starting bot...")
     keep_alive()  # Keep the bot alive using Flask
     bot.infinity_polling()  # Start the bot
