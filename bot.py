@@ -42,23 +42,19 @@ def restrict_message(message):
             member = bot.get_chat_member(message.chat.id, message.from_user.id)
             if member.status in ['administrator', 'creator']:
                 return
-            
+
+            # Delete all message types (text, photo, video, document, sticker, etc.)
             bot.delete_message(message.chat.id, message.message_id)
-            
-            warning_msg = bot.send_message(
-                message.chat.id,
-                f"⚠️ @{message.from_user.username} 🚫 Only admins can post in this topic. Please use General topic (https://t.me/c/{provided_topic.split('_')[0]}/1) for discussions.",
-                message_thread_id=message.message_thread_id
-            )
 
-            def delete_warning():
-                try:
-                    time.sleep(60)  # Wait 1 minute before deleting the warning
-                    bot.delete_message(message.chat.id, warning_msg.message_id)
-                except Exception as del_error:
-                    print(f"Error deleting warning message: {del_error}")
+            # Send warning to user privately instead of the topic
+            warning_msg = f"⚠️ @{message.from_user.username} 🚫 Only admins can post in this topic. Please use the General topic for discussions."
 
-            Thread(target=delete_warning).start()
+            # Send warning as a private message if possible
+            try:
+                bot.send_message(message.from_user.id, warning_msg)
+            except Exception as private_error:
+                print(f"Failed to send private message: {private_error}")
+
         except Exception as e:
             print("Error handling message:", e)
 
