@@ -41,19 +41,22 @@ def restrict_message(message):
         try:
             member = bot.get_chat_member(message.chat.id, message.from_user.id)
             if member.status in ['administrator', 'creator']:
-                return
+                return  # Allow admins to post in any topic
 
-            # Delete all message types (text, photo, video, document, sticker, etc.)
-            bot.delete_message(message.chat.id, message.message_id)
+            # Check if the message is any of the following types
+            if (message.text or message.photo or message.video or message.document or 
+                message.audio or message.voice or message.sticker or message.animation):
+                
+                # Delete the message regardless of its type
+                bot.delete_message(message.chat.id, message.message_id)
 
-            # Send warning to user privately instead of the topic
-            warning_msg = f"⚠️ @{message.from_user.username} 🚫 Only admins can post in this topic. Please use the General topic for discussions."
-
-            # Send warning as a private message if possible
-            try:
-                bot.send_message(message.from_user.id, warning_msg)
-            except Exception as private_error:
-                print(f"Failed to send private message: {private_error}")
+                # Send a private warning message to the user
+                warning_msg = f"⚠️ @{message.from_user.username} 🚫 Only admins can post in this topic. Please use the General topic for discussions."
+                
+                try:
+                    bot.send_message(message.from_user.id, warning_msg)
+                except Exception as private_error:
+                    print(f"Failed to send private message: {private_error}")
 
         except Exception as e:
             print("Error handling message:", e)
