@@ -64,14 +64,14 @@ def restrict_message(message):
                 message_thread_id=message.message_thread_id
             )
             
-            # Schedule message deletion after 1 minute
+            # Schedule message deletion after 10 sec
             def delete_warning():
                 try:
                     bot.delete_message(message.chat.id, warning_msg.message_id)
                 except Exception as del_error:
                     print(f"Error deleting warning message: {del_error}")
             
-            Thread(target=lambda: (time.sleep(60), delete_warning())).start()
+            Thread(target=lambda: (time.sleep(10), delete_warning())).start()
         except Exception as e:
             print("Error handling message:", e)
 if __name__ == "__main__":
