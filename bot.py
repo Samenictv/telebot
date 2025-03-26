@@ -75,9 +75,6 @@ def restrict_message(message):
         except Exception as e:
             print("Error handling message:", e)
 if __name__ == "__main__":
-    print("Starting bot with webhook...")
+    print("Starting bot...")
     keep_alive()  # Keep the Flask server running
-    WEBHOOK_URL = "https://telebot-fx5i.onrender.com"  # Start the bot
-    bot.remove_webhook()
-    time.sleep(1)  # To ensure the webhook is removed
-    bot.set_webhook(url=WEBHOOK_URL)
+    bot.infinity_polling()  # Start the bot
